@@ -2,8 +2,13 @@
 <html lang="zh-HK">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>夾錢神器💸</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1a1d">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 <style>
   body { font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif; background-color: #1a1a1d; color: #f0f0f0; padding: 20px; max-width: 450px; margin: 0 auto; }
   h2 { text-align: center; color: #e74c3c; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; }
@@ -15,7 +20,6 @@
   .main-input { width: 120px; padding: 10px; font-size: 18px; text-align: right; border: 1px solid #444; border-radius: 8px; background: #1a1a1d; color: #fff; outline: none; transition: 0.3s; }
   .main-input:focus { border-color: #e74c3c; box-shadow: 0 0 8px rgba(231, 76, 60, 0.4); }
 
-  /* 獨立開支區 */
   .custom-add-row { display: flex; gap: 8px; margin-bottom: 15px; }
   .custom-input { flex: 1; padding: 10px; font-size: 15px; border: 1px solid #444; border-radius: 8px; background: #1a1a1d; color: #fff; }
   .add-btn { padding: 10px 15px; font-size: 15px; font-weight: bold; background-color: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
@@ -24,19 +28,19 @@
   .custom-list { list-style: none; padding: 0; margin: 0; }
   .custom-item { display: flex; justify-content: space-between; align-items: center; background: #38383e; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 15px; border-left: 3px solid #f1c40f; }
   .delete-btn { background-color: #555; color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 13px; }
-  .delete-btn:hover { background-color: #ff4d4d; }
-
-  /* 結果區 */
+  
   .result-box { background: #e74c3c; padding: 20px; border-radius: 12px; color: #fff; text-align: center; margin-bottom: 15px; }
   .result-box h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: normal; opacity: 0.9; }
   .result-box .big-number { font-size: 36px; font-weight: bold; margin: 0; }
   
-  .special-results { list-style: none; padding: 0; margin: 0; }
-  .special-results li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #555; font-size: 16px; color: #f1c40f; font-weight: bold; }
+  .special-results { list-style: none; padding: 0; margin: 0; background: #2c2c30; border-radius: 12px; }
+  .special-results li { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #444; font-size: 16px; color: #f1c40f; font-weight: bold; }
   .special-results li:last-child { border-bottom: none; }
 
-  .action-btns { display: flex; gap: 10px; margin-top: 20px; }
-  .action-btns button { flex: 1; padding: 15px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; }
+  .action-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .action-btns button { width: 100%; padding: 15px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; }
+  .share-btn { background-color: #25D366; color: white; } /* WhatsApp 綠色 */
+  .share-btn:active { background-color: #1ebe5d; }
   .reset-btn { background-color: #444; color: white; }
   .reset-btn:active { background-color: #222; }
 
@@ -51,7 +55,7 @@
   <div class="section-title">🧾 基本帳單資訊</div>
   <div class="input-group">
     <label>埋單總數 ($):</label>
-    <input type="number" id="total-bill" class="main-input" placeholder="0.00" min="0" step="0.01" oninput="calculate()">
+    <input type="number" id="total-bill" class="main-input" placeholder="0.0" min="0" oninput="calculate()">
   </div>
   <div class="input-group">
     <label>總人數 (連埋特別開支嗰啲):</label>
@@ -63,25 +67,24 @@
   <div class="section-title">👑 獨立開支 (有邊個食好西/飲酒？)</div>
   <div class="custom-add-row">
     <input type="text" id="special-name" class="custom-input" placeholder="例如: Peter">
-    <input type="number" id="special-amount" class="custom-input" placeholder="金額 ($)" style="width: 80px; flex: none;" step="0.01">
+    <input type="number" id="special-amount" class="custom-input" placeholder="金額 ($)" style="width: 80px; flex: none;">
     <button class="add-btn" onclick="addSpecialItem()">加入</button>
   </div>
   <ul class="custom-list" id="special-list"></ul>
 </div>
 
-<div class="card" style="background: transparent; padding: 0; box-shadow: none; border: none;">
-  <div class="result-box">
-    <h3>每位基本要夾 (無叫特別嘢嘅人)</h3>
-    <p class="big-number" id="base-share">$0.00</p>
-  </div>
-  
-  <div class="card" id="special-results-card" style="display: none;">
-    <div class="section-title" style="border-color: #f1c40f;">📌 叫咗特別嘢嘅人要畀:</div>
-    <ul class="special-results" id="special-results-list"></ul>
-  </div>
+<div class="result-box">
+  <h3>每位基本要夾 (無叫特別嘢嘅人)</h3>
+  <p class="big-number" id="base-share">$0.0</p>
+</div>
+
+<div id="special-results-card" style="display: none; margin-bottom: 20px;">
+  <div class="section-title" style="border-color: #f1c40f;">📌 叫咗特別嘢嘅人要畀:</div>
+  <ul class="special-results" id="special-results-list"></ul>
 </div>
 
 <div class="action-btns">
+  <button class="share-btn" onclick="shareToWhatsApp()">📲 一鍵 WhatsApp 追數</button>
   <button class="reset-btn" onclick="reset()">重新計算 (清除記錄)</button>
 </div>
 
@@ -90,9 +93,20 @@
 </div>
 
 <script>
-  let specialItems = [];
+  // --- PWA Service Worker 註冊 ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker 註冊成功！', reg.scope))
+        .catch(err => console.log('Service Worker 註冊失敗：', err));
+    });
+  }
 
-  // 讀取 LocalStorage
+  // --- 應用程式邏輯 ---
+  let specialItems = [];
+  let finalBaseShare = 0;
+  let finalSpecials = {};
+
   function loadData() {
     const savedBill = localStorage.getItem('billsplit_total');
     const savedPeople = localStorage.getItem('billsplit_people');
@@ -106,7 +120,6 @@
     }
   }
 
-  // 儲存至 LocalStorage
   function saveData() {
     localStorage.setItem('billsplit_total', document.getElementById('total-bill').value);
     localStorage.setItem('billsplit_people', document.getElementById('num-people').value);
@@ -138,14 +151,10 @@
   function renderSpecialList() {
     const listElement = document.getElementById('special-list');
     listElement.innerHTML = '';
-    
     specialItems.forEach((item, index) => {
       const li = document.createElement('li');
       li.className = 'custom-item';
-      li.innerHTML = `
-        <span>👤 ${item.name}: <strong>$${item.amount}</strong></span>
-        <button class="delete-btn" onclick="removeSpecialItem(${index})">刪除</button>
-      `;
+      li.innerHTML = `<span>👤 ${item.name}: <strong>$${item.amount}</strong></span><button class="delete-btn" onclick="removeSpecialItem(${index})">刪除</button>`;
       listElement.appendChild(li);
     });
   }
@@ -153,57 +162,59 @@
   function calculate() {
     let totalBill = parseFloat(document.getElementById('total-bill').value) || 0;
     let numPeople = parseInt(document.getElementById('num-people').value) || 1;
-    
     let specialTotal = specialItems.reduce((sum, item) => sum + item.amount, 0);
 
-    // 防呆機制：如果獨立開支大過總數
     if (specialTotal > totalBill && totalBill > 0) {
       document.getElementById('base-share').innerText = "計錯數啦！";
-      document.getElementById('base-share').style.fontSize = "24px";
       return;
     }
 
-    document.getElementById('base-share').style.fontSize = "36px";
-
-    // 邏輯：總數減去所有獨立開支，淨低嘅大家平分
     let remainingToSplit = totalBill - specialTotal;
-    let baseShare = remainingToSplit / numPeople;
-    
-    // 顯示基本夾錢金額 (兩位小數顯示，到 cents)
-    document.getElementById('base-share').innerText = '$' + baseShare.toFixed(2);
+    finalBaseShare = Math.round(remainingToSplit / numPeople);
+    document.getElementById('base-share').innerText = '$' + finalBaseShare;
 
-    // 處理特別名單嘅最終要畀金額
     const specialResultsCard = document.getElementById('special-results-card');
     const specialResultsList = document.getElementById('special-results-list');
     specialResultsList.innerHTML = '';
+    finalSpecials = {};
 
     if (specialItems.length > 0 && totalBill > 0) {
       specialResultsCard.style.display = 'block';
-      
-      // 因為同一個人可以有多項獨立開支，所以我哋用個 Object 裝住先
-      let combinedSpecials = {};
       specialItems.forEach(item => {
-        if(combinedSpecials[item.name]) {
-          combinedSpecials[item.name] += item.amount;
-        } else {
-          combinedSpecials[item.name] = item.amount;
-        }
+        finalSpecials[item.name] = (finalSpecials[item.name] || 0) + item.amount;
       });
 
-      for (let person in combinedSpecials) {
-        let finalAmount = baseShare + combinedSpecials[person];
-        specialResultsList.innerHTML += `
-          <li>
-            <span>${person}</span>
-            <span>$${finalAmount.toFixed(2)}</span>
-          </li>
-        `;
+      for (let person in finalSpecials) {
+        let personTotal = finalBaseShare + finalSpecials[person];
+        finalSpecials[person] = personTotal; // 儲存最終要畀嘅數，方便 WhatsApp 用
+        specialResultsList.innerHTML += `<li><span>${person}</span><span>$${Math.round(personTotal)}</span></li>`;
       }
     } else {
       specialResultsCard.style.display = 'none';
     }
-
     saveData();
+  }
+
+  function shareToWhatsApp() {
+    let totalBill = document.getElementById('total-bill').value || 0;
+    if (totalBill == 0) return alert('未入錢呀！');
+
+    let text = `💸 今餐埋單總數: $${totalBill}\n`;
+    text += `👨‍👩‍👧‍👦 總共 ${document.getElementById('num-people').value} 人\n`;
+    text += `===============\n`;
+    text += `💵 基本每位夾: *$${finalBaseShare}*\n`;
+    
+    if (Object.keys(finalSpecials).length > 0) {
+      text += `\n👑 叫咗特別嘢嘅大佬:\n`;
+      for (let person in finalSpecials) {
+        text += `- ${person}: *$${Math.round(finalSpecials[person])}*\n`;
+      }
+    }
+    text += `===============\n🙏 快啲 PayMe / FPS 過數 Please！`;
+    
+    // 自動打開 WhatsApp
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   function reset() {
@@ -212,24 +223,15 @@
     specialItems = [];
     renderSpecialList();
     calculate();
-    document.getElementById('base-share').innerText = '$0.00';
-    localStorage.removeItem('billsplit_total');
-    localStorage.removeItem('billsplit_people');
-    localStorage.removeItem('billsplit_items');
+    document.getElementById('base-share').innerText = '$0';
+    localStorage.clear();
   }
 
-  // 㩒 Enter 鍵加入特別名單
   document.getElementById("special-amount").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      addSpecialItem();
-    }
+    if (event.key === "Enter") { event.preventDefault(); addSpecialItem(); }
   });
 
-  window.onload = function() {
-    loadData();
-    calculate();
-  };
+  window.onload = function() { loadData(); calculate(); };
 </script>
 
 </body>
