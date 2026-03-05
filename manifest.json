@@ -1,0 +1,16 @@
+{
+  "name": "終極夾錢神器 Pro",
+  "short_name": "夾錢 Pro",
+  "description": "最強食飯夾錢、獨立開支計算機",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a1a1d",
+  "theme_color": "#e74c3c",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
